@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UNITY BANK GTC - Login</title>
+  
+  <!-- Supabase Configuration -->
+  <script>
+    // Supabase Configuration
+    const SUPABASE_URL = 'https://qrfkfvknvlagcithwhsh.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_hZ0CRvlLxSqNMzdHWqEuXA_SwWB3s9X';
+  </script>
+  
+  <!-- Supabase Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .gradient-bg { background: linear-gradient(135deg, #eff6ff 0%, #ffffff 50%, #eef2ff 100%); }
+    .btn-primary { background: linear-gradient(135deg, #2e48b6 0%, #1d2f77 100%); }
+    .btn-primary:hover { opacity: 0.9; }
+  </style>
+</head>
+<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+  <!-- Back Button -->
+  <button onclick="window.location.href='index.html'" class="absolute top-4 left-4 flex items-center text-gray-600 hover:text-[#2e48b6] transition-colors">
+    <i data-lucide="arrow-left" class="w-5 h-5 mr-1"></i>
+    Back
+  </button>
+
+  <div class="w-full max-w-md">
+    <!-- Logo -->
+    <div class="text-center mb-8">
+      <a href="index.html" class="inline-flex items-center space-x-2">
+        <div class="w-12 h-12 btn-primary rounded-xl flex items-center justify-center">
+          <span class="text-white font-bold text-xl">U</span>
+        </div>
+        <span class="font-bold text-2xl text-[#1d2f77]">UNITYBANKGTC</span>
+      </a>
+    </div>
+
+    <!-- Login Form -->
+    <div class="bg-white rounded-2xl shadow-xl p-8">
+      <h1 class="text-2xl font-bold text-gray-900 text-center mb-2">Sign In</h1>
+      <p class="text-gray-500 text-center mb-6">Welcome back! Please enter your details.</p>
+
+      <form id="loginForm" class="space-y-5">
+        <!-- Email -->
+        <div class="space-y-2">
+          <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+          <div class="relative">
+            <i data-lucide="mail" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required
+              class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#2e48b6] focus:border-transparent outline-none transition-all">
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="space-y-2">
+          <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+          <div class="relative">
+            <i data-lucide="lock" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required
+              class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#2e48b6] focus:border-transparent outline-none transition-all">
+            <button type="button" id="togglePassword" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+              <i data-lucide="eye" class="w-5 h-5" id="eyeIcon"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Forgot Password -->
+        <div class="text-right">
+          <a href="forgot-password.html" class="text-sm text-[#2e48b6] hover:underline">Forgot Password?</a>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="submitBtn"
+          class="w-full btn-primary text-white font-medium py-3 rounded-xl transition-all flex items-center justify-center">
+          <span id="btnText">Sign In</span>
+          <div id="btnLoader" class="hidden w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin ml-2"></div>
+        </button>
+      </form>
+
+      <!-- Sign Up Link -->
+      <div class="mt-6 text-center">
+        <p class="text-gray-500">
+          Don't have an account? 
+          <a href="signup.html" class="text-[#2e48b6] font-medium hover:underline">Sign Up</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed top-4 right-4 px-6 py-4 rounded-xl shadow-lg transform translate-x-full transition-transform duration-300 z-50 hidden">
+    <div class="flex items-center space-x-3">
+      <i data-lucide="alert-circle" class="w-5 h-5" id="toastIcon"></i>
+      <span id="toastMessage"></span>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // Initialize Supabase client
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Toggle password visibility
+    document.getElementById('togglePassword').addEventListener('click', function() {
+      const passwordInput = document.getElementById('password');
+      const eyeIcon = document.getElementById('eyeIcon');
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeIcon.setAttribute('data-lucide', 'eye-off');
+      } else {
+        passwordInput.type = 'password';
+        eyeIcon.setAttribute('data-lucide', 'eye');
+      }
+      lucide.createIcons();
+    });
+
+    // Show toast notification
+    function showToast(message, type = 'error') {
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toastMessage');
+      const toastIcon = document.getElementById('toastIcon');
+      
+      toastMessage.textContent = message;
+      toast.classList.remove('hidden', 'translate-x-full');
+      toast.classList.add('translate-x-0');
+      
+      if (type === 'success') {
+        toast.classList.add('bg-green-500', 'text-white');
+        toast.classList.remove('bg-red-500');
+        toastIcon.setAttribute('data-lucide', 'check-circle');
+      } else {
+        toast.classList.add('bg-red-500', 'text-white');
+        toast.classList.remove('bg-green-500');
+        toastIcon.setAttribute('data-lucide', 'alert-circle');
+      }
+      lucide.createIcons();
+      
+      setTimeout(() => {
+        toast.classList.add('translate-x-full');
+        toast.classList.remove('translate-x-0');
+        setTimeout(() => toast.classList.add('hidden'), 300);
+      }, 3000);
+    }
+
+    // Handle login form submission
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const btnText = document.getElementById('btnText');
+      const btnLoader = document.getElementById('btnLoader');
+      const submitBtn = document.getElementById('submitBtn');
+      
+      // Show loading state
+      btnText.textContent = 'Signing in...';
+      btnLoader.classList.remove('hidden');
+      submitBtn.disabled = true;
+      
+      try {
+        // Check for admin credentials
+        if (email === 'm@unity.com' && password === 'admin$$') {
+          const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+          
+          if (error) {
+            // Try to sign up admin if login fails
+            const { data: signUpData, error: signUpError } = await supabase.auth.signUp({ email, password });
+            if (signUpError) throw signUpError;
+            
+            // Create admin profile
+            await supabase.from('profiles').insert({
+              id: signUpData.user.id,
+              full_name: 'Administrator',
+              email: email,
+              phone: '0000000000',
+              account_number: '0000000000',
+              account_type: 'checking',
+              balance: 0,
+              currency: 'USD',
+              pin: '0000',
+              status: 'active',
+              role: 'admin',
+              theme: 'light',
+              card_design: 0,
+              kyc_verified: true
+            });
+            
+            showToast('Admin account created!', 'success');
+            window.location.href = 'admin-dashboard.html';
+            return;
+          }
+          
+          // Check if admin profile exists
+          const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).single();
+          
+          if (!profile) {
+            await supabase.from('profiles').insert({
+              id: data.user.id,
+              full_name: 'Administrator',
+              email: email,
+              phone: '0000000000',
+              account_number: '0000000000',
+              account_type: 'checking',
+              balance: 0,
+              currency: 'USD',
+              pin: '0000',
+              status: 'active',
+              role: 'admin',
+              theme: 'light',
+              card_design: 0,
+              kyc_verified: true
+            });
+          }
+          
+          showToast('Admin login successful!', 'success');
+          window.location.href = 'admin-dashboard.html';
+          return;
+        }
+        
+        // Regular user login
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        
+        // Get user profile
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
+        
+        if (profileError || !profile) {
+          throw new Error('User profile not found');
+        }
+        
+        // Check if account is frozen
+        if (profile.status === 'frozen') {
+          showToast('Your account has been frozen. Please contact customer support.');
+          return;
+        }
+        
+        showToast('Login successful!', 'success');
+        
+        // Redirect based on role
+        if (profile.role === 'admin') {
+          window.location.href = 'admin-dashboard.html';
+        } else {
+          window.location.href = 'user-dashboard.html';
+        }
+        
+      } catch (error) {
+        showToast(error.message || 'Login failed');
+      } finally {
+        btnText.textContent = 'Sign In';
+        btnLoader.classList.add('hidden');
+        submitBtn.disabled = false;
+      }
+    });
+
+    // Check for existing session on page load
+    async function checkSession() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (profile?.role === 'admin') {
+          window.location.href = 'admin-dashboard.html';
+        } else {
+          window.location.href = 'user-dashboard.html';
+        }
+      }
+    }
+    
+    checkSession();
+  </script>
+</body>
+</html>

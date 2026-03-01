@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Unity Bank FNL</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f0f23;
+      color: white;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .container {
+      padding: 16px;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .balance-card {
+      background: linear-gradient(135deg, #1e1e40, #2a2a5a);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    }
+    .balance {
+      font-size: 2.4rem;
+      font-weight: bold;
+      margin: 8px 0;
+    }
+    .active {
+      color: #00ff88;
+      font-size: 0.95rem;
+    }
+    .buttons {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    button {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .send-btn {
+      background: #4d4dff;
+      color: white;
+    }
+    .history-btn {
+      background: #333366;
+      color: white;
+    }
+    .sections {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .card-small {
+      flex: 1;
+      background: #2a2a4a;
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+    .activity {
+      background: #1a1a2e;
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .activity-item {
+      padding: 12px 0;
+      border-bottom: 1px solid #333;
+    }
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+    .green { color: #00ff88; }
+    .red { color: #ff5555; }
+
+    /* Prank screen */
+    #prank {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.95);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      font-size: 3rem;
+      text-align: center;
+      color: #ff0044;
+    }
+    #prank.show {
+      display: flex;
+    }
+
+    /* Form */
+    #send-form {
+      display: none;
+      background: #1e1e40;
+      padding: 20px;
+      border-radius: 16px;
+      margin-top: 20px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #444;
+      background: #0f0f23;
+      color: white;
+      font-size: 1rem;
+    }
+    #confirm {
+      background: #ff4444;
+      color: white;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h2>UNITY BANK FNL</h2>
+    <p>Welcome back, Ji</p>
+  </header>
+
+  <div class="balance-card">
+    <div>Total Balance</div>
+    <div class="balance">$480,625,587.00</div>
+    <div class="active">Active ****8892</div>
+  </div>
+
+  <div class="buttons">
+    <button class="send-btn" onclick="showForm()">Send Funds</button>
+    <button class="history-btn">History</button>
+  </div>
+
+  <div class="sections">
+    <div class="card-small">📄 Statements</div>
+    <div class="card-small">🏛 Services</div>
+  </div>
+
+  <div class="activity">
+    <h3>Recent Activity <small>See All</small></h3>
+    
+    <div class="activity-item">
+      <span class="green">↑ Self</span><br>
+      Feb 15, 2026<br>
+      <span class="green">+$5,000,000.00</span> Completed
+    </div>
+    
+    <div class="activity-item">
+      <span class="red">↓ IRS Treasury</span><br>
+      Feb 14, 2026<br>
+      <span class="red">$250,000.00</span> Completed
+    </div>
+  </div>
+
+  <!-- Send form -->
+  <div id="send-form">
+    <h3>Send Funds</h3>
+    <input type="text" placeholder="Recipient Account" id="recipient">
+    <input type="number" placeholder="Amount" id="amount">
+    <textarea placeholder="Notes" id="notes"></textarea>
+    <button id="confirm" onclick="triggerPrank()">Confirm Transaction</button>
+  </div>
+
+  <!-- Prank reveal -->
+  <div id="prank">
+    <div>error</div>
+    <div>purchase unban pin</div>
+    <button onclick="hidePrank()" style="margin-top:40px; padding:16px 32px; font-size:1.2rem; background:#444; color:white; border:none; border-radius:5px;">
+      Back
+    </button>
+  </div>
+</div>
+
+<script>
+  function showForm() {
+    document.getElementById('send-form').style.display = 'block';
+  }
+
+  function triggerPrank() {
+    document.getElementById('send-form').style.display = 'none';
+    document.getElementById('prank').classList.add('show');
+  }
+
+  function hidePrank() {
+    document.getElementById('prank').classList.remove('show');
+    // Optional: reset form if you want
+    document.getElementById('recipient').value = '';
+    document.getElementById('amount').value = '';
+    document.getElementById('notes').value = '';
+  }
+</script>
+
+</body>
+</html>
